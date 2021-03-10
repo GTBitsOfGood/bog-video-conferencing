@@ -32,7 +32,7 @@ ReactDOM.render(
   <MuiThemeProvider theme={theme}>
     <CssBaseline />
     <UnsupportedBrowserWarning>
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <AppStateProvider>
           <Switch>
             <PrivateRoute exact path="/">

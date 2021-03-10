@@ -67,7 +67,7 @@
     "build": "node ./scripts/build.js",
     "test": "jest",
     "eject": "react-scripts eject",
-    "lint": "eslint src",
+    "lint": "eslint ./src",
     "server": "node server.js",
     "test:ci": "jest --ci --runInBand --reporters=default --reporters=jest-junit --coverage",
     "cypress:open": "cypress open",
