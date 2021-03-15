@@ -1,6 +1,7 @@
-import React, { ChangeEvent, FormEvent } from 'react';
-import { Typography, makeStyles, TextField, Grid, Button, InputLabel, Theme } from '@material-ui/core';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { Button, Grid, InputLabel, makeStyles, TextField, Theme, Typography } from '@material-ui/core';
 import { useAppState } from '../../../state';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
   gutterBottom: {
@@ -38,6 +39,8 @@ interface RoomNameScreenProps {
 export default function RoomNameScreen({ name, roomName, setName, setRoomName, handleSubmit }: RoomNameScreenProps) {
   const classes = useStyles();
   const { user } = useAppState();
+  const { URLRoomName } = useParams();
+  const [includeRoomNameField, setIncludeRoomNameField] = useState(false);
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -46,6 +49,10 @@ export default function RoomNameScreen({ name, roomName, setName, setRoomName, h
   const handleRoomNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setRoomName(event.target.value);
   };
+
+  useEffect(() => {
+    setIncludeRoomNameField(!URLRoomName);
+  }, [URLRoomName]);
 
   const hasUsername = !window.location.search.includes('customIdentity=true') && user?.displayName;
 
@@ -76,20 +83,22 @@ export default function RoomNameScreen({ name, roomName, setName, setRoomName, h
               />
             </div>
           )}
-          <div className={classes.textFieldContainer}>
-            <InputLabel shrink htmlFor="input-room-name">
-              Room Name
-            </InputLabel>
-            <TextField
-              autoCapitalize="false"
-              id="input-room-name"
-              variant="outlined"
-              fullWidth
-              size="small"
-              value={roomName}
-              onChange={handleRoomNameChange}
-            />
-          </div>
+          {includeRoomNameField && (
+            <div className={classes.textFieldContainer}>
+              <InputLabel shrink htmlFor="input-room-name">
+                Room Name
+              </InputLabel>
+              <TextField
+                autoCapitalize="false"
+                id="input-room-name"
+                variant="outlined"
+                fullWidth
+                size="small"
+                value={roomName}
+                onChange={handleRoomNameChange}
+              />
+            </div>
+          )}
         </div>
         <Grid container justify="flex-end">
           <Button

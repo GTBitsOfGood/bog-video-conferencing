@@ -63,7 +63,9 @@ export default function DeviceSelectionScreen({ name, roomName, setStep }: Devic
   const disableButtons = isFetching || isAcquiringLocalTracks || isConnecting;
 
   const handleJoin = () => {
-    getToken(name, roomName).then(token => connect(token));
+    getToken(name, roomName)
+      .then(token => connect(token))
+      .catch(error => console.log(`ERROR WHILE JOINING: ${error}`));
   };
 
   return (

@@ -63,12 +63,26 @@ export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
   } else {
     contextValue = {
       ...contextValue,
-      getToken: async (identity, roomName) => {
+      getToken: async (name, meetingId) => {
         const headers = new window.Headers();
-        const endpoint = process.env.REACT_APP_TOKEN_ENDPOINT || '/token';
-        const params = new window.URLSearchParams({ identity, roomName });
+        const endpoint = process.env.REACT_APP_TOKEN_ENDPOINT;
 
-        return fetch(`${endpoint}?${params}`, { headers }).then(res => res.text());
+        const fetchResult = await fetch(`${endpoint}`, {
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            id: meetingId,
+            name: name,
+          }),
+        });
+        const result = await fetchResult.json();
+        if (!result.success) {
+          throw new Error(result.message);
+        }
+        return result.payload.token;
       },
     };
   }
