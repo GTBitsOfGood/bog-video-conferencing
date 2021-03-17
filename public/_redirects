@@ -1,2 +1,4 @@
 # the app is treated like it's at /video rather /
 /video* /:splat
+# browser router configuration
+/* /index.html 200

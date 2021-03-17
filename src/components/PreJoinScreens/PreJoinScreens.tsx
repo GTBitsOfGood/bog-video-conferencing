@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FormEvent, SyntheticEvent } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import DeviceSelectionScreen from './DeviceSelectionScreen/DeviceSelectionScreen';
 import IntroContainer from '../IntroContainer/IntroContainer';
 import MediaErrorSnackbar from './MediaErrorSnackbar/MediaErrorSnackbar';
