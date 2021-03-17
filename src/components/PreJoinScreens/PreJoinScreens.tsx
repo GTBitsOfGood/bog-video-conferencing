@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent, SyntheticEvent } from 'react';
 import DeviceSelectionScreen from './DeviceSelectionScreen/DeviceSelectionScreen';
 import IntroContainer from '../IntroContainer/IntroContainer';
 import MediaErrorSnackbar from './MediaErrorSnackbar/MediaErrorSnackbar';
@@ -27,7 +27,7 @@ export default function PreJoinScreens() {
 
   useEffect(() => {
     if (URLRoomName) {
-      setRoomName(URLRoomName);
+      setRoomName(decodeURIComponent(URLRoomName));
       if (user?.displayName) {
         setStep(Steps.deviceSelectionStep);
       }
@@ -45,10 +45,16 @@ export default function PreJoinScreens() {
   }, [getAudioAndVideoTracks, step, mediaError]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    if (event instanceof Event) {
+      event.preventDefault();
+    }
     // If this app is deployed as a twilio function, don't change the URL because routing isn't supported.
     if (!window.location.origin.includes('twil.io')) {
-      window.history.replaceState(null, '', window.encodeURI(`/room/${roomName}${window.location.search || ''}`));
+      window.history.replaceState(
+        null,
+        '',
+        `${process.env.PUBLIC_URL}/room/${window.encodeURIComponent(roomName)}${window.location.search || ''}`
+      );
     }
     setStep(Steps.deviceSelectionStep);
   };

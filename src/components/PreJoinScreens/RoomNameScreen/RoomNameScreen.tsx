@@ -2,6 +2,7 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Button, Grid, InputLabel, makeStyles, TextField, Theme, Typography } from '@material-ui/core';
 import { useAppState } from '../../../state';
 import { useParams } from 'react-router-dom';
+import { TwilioError } from 'twilio-video';
 
 const useStyles = makeStyles((theme: Theme) => ({
   gutterBottom: {
@@ -38,9 +39,19 @@ interface RoomNameScreenProps {
 
 export default function RoomNameScreen({ name, roomName, setName, setRoomName, handleSubmit }: RoomNameScreenProps) {
   const classes = useStyles();
-  const { user } = useAppState();
+  const { user, isValidRoom, setError } = useAppState();
   const { URLRoomName } = useParams();
   const [includeRoomNameField, setIncludeRoomNameField] = useState(false);
+
+  const onSubmit = async (formEvent: FormEvent<HTMLFormElement>) => {
+    formEvent.preventDefault();
+    const { valid, message } = await isValidRoom(roomName);
+    if (valid) {
+      handleSubmit(formEvent);
+      return;
+    }
+    setError(new Error(message) as TwilioError);
+  };
 
   const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -66,7 +77,7 @@ export default function RoomNameScreen({ name, roomName, setName, setRoomName, h
           ? "Enter the name of a room you'd like to join."
           : "Enter your name and the name of a room you'd like to join"}
       </Typography>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={onSubmit}>
         <div className={classes.inputContainer}>
           {!hasUsername && (
             <div className={classes.textFieldContainer}>

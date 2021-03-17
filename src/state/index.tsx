@@ -12,6 +12,7 @@ export interface StateContextType {
   setError(error: TwilioError | null): void;
   getToken(name: string, room: string, passcode?: string): Promise<string>;
   user?: User | null | { displayName: undefined; photoURL: undefined; passcode?: string };
+  isValidRoom(room: string): Promise<{ valid: boolean; message?: string }>;
   signIn?(passcode?: string): Promise<void>;
   signOut?(): Promise<void>;
   isAuthReady?: boolean;
@@ -63,7 +64,32 @@ export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
   } else {
     contextValue = {
       ...contextValue,
-      getToken: async (name, meetingId) => {
+      async isValidRoom(roomName: string): Promise<{ valid: boolean; message?: string }> {
+        const headers = new window.Headers();
+        const endpoint = process.env.REACT_APP_TOKEN_ENDPOINT;
+        console.log('BEFORE FETCH');
+        const fetchResult = await fetch(`${endpoint}?isValid`, {
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            roomName: roomName,
+          }),
+        });
+        const result = await fetchResult.json();
+        if (!result.success) {
+          return {
+            valid: false,
+            message: result.message,
+          };
+        }
+        return {
+          valid: true,
+        };
+      },
+      getToken: async (name, roomName) => {
         const headers = new window.Headers();
         const endpoint = process.env.REACT_APP_TOKEN_ENDPOINT;
 
@@ -74,7 +100,7 @@ export default function AppStateProvider(props: React.PropsWithChildren<{}>) {
           },
           method: 'POST',
           body: JSON.stringify({
-            id: meetingId,
+            roomName: roomName,
             name: name,
           }),
         });
